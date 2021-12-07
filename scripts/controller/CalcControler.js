@@ -62,8 +62,9 @@ class CalcControler {
             let result = eval(this._operation.join(""));
             this._operation = [result, last];
         } else if (clear) {
-            this.displayCalc = eval(this._operation.join(""));
-            this._operation = []
+            let result = eval(this._operation.join(""));
+            this.displayCalc = result;
+            this._operation = [result];
         }
 
     }
@@ -123,11 +124,9 @@ class CalcControler {
                 this.addOperation("%")
                 break;
             case "igual":
-                if (this._operation.length > 0) {
+                if (this._operation.length > 1) {
                     this.calculate(true)
-                } else {
-                    this.displayCalc = ""
-                }
+                } 
                 break;
             case "ponto":
 
