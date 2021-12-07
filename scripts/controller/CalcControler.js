@@ -1,5 +1,8 @@
 class CalcControler {
 
+    print(value) {
+        console.log(value);
+    }
     constructor() {
         this._operation = [];
         //document.getElementById("display")
@@ -45,18 +48,24 @@ class CalcControler {
         return (["+", "-", "*", "%", "/"].indexOf(value) > -1);
     }
 
-    operationPushValue(value){
+    operationPushValue(value) {
         this._operation.push(value);
-        if (this._operation.length>3) {
-            this.calculate();
+        if (this._operation.length > 3) {
+            this.calculate(false);
         }
     }
 
-    calculate(){
-        let last = this._operation.pop();
-        let result = eval (this._operation.join(""));
-        this._operation = [result, last];
-        this.displayCalc = result;
+    calculate(clear) {
+
+        if (!clear) {
+            let last = this._operation.pop();
+            let result = eval(this._operation.join(""));
+            this._operation = [result, last];
+        } else if (clear) {
+            this.displayCalc = eval(this._operation.join(""));
+            this._operation = []
+        }
+
     }
 
     addOperation(value) {
@@ -68,17 +77,19 @@ class CalcControler {
                     console.log(".");
                 }
             } else {
-                this.operationPushValue(value);
+                if (this._operation.length != 0) {
+                    this.operationPushValue(value);
+                }
             }
         } else {
             if (this._operation.length == 0 || isNaN(this.lastOperation())) {
                 this.operationPushValue(value);
-            } else {                
+                this.displayCalc = value;
+            } else {
                 let val = this.lastOperation().toString() + value.toString();
                 this._operation[this._operation.length - 1] = parseInt(val);
-            }
-            this.displayCalc = value;
-            //atualizar display
+                this.displayCalc = val;
+            }//atualizar display
 
         }
         console.log(this._operation);
@@ -112,7 +123,11 @@ class CalcControler {
                 this.addOperation("%")
                 break;
             case "igual":
-
+                if (this._operation.length > 0) {
+                    this.calculate(true)
+                } else {
+                    this.displayCalc = ""
+                }
                 break;
             case "ponto":
 
