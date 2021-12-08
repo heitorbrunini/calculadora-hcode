@@ -1,10 +1,7 @@
 class CalcControler {
 
-    print(value) {
-        console.log(value);
-    }
     constructor() {
-        
+
         this._operation = [];
         this._float = false;
         this._floatNumber = [];
@@ -15,6 +12,7 @@ class CalcControler {
 
         this._displayCalc = "0";
         this.initButtonEvents();
+        this.initKeyboard();
         this.initialize();
 
     };
@@ -42,17 +40,17 @@ class CalcControler {
     clearAll() {
         this.checkFloat();
         this._operation = [];
-        this.displayCalc ='0';
+        this.displayCalc = '0';
     }
 
     clearEntry() {
         this.checkFloat();        //error if CE called with no number and if operation len = 1
-        if (/*!isNaN(this.lastOperation()) &&*/ this._operation.length > 2){
+        if (/*!isNaN(this.lastOperation()) &&*/ this._operation.length > 2) {
             this.displayCalc = this._operation[0];;
-        } else if (/*!isNaN(this.lastOperation()) &&*/ this._operation.length < 2){
+        } else if (/*!isNaN(this.lastOperation()) &&*/ this._operation.length < 2) {
             this.displayCalc = '0';
         }
-        
+
         this._operation.pop();
         console.log("CE:");
         console.log(this._operation);
@@ -69,8 +67,8 @@ class CalcControler {
         }
     }
 
-    checkFloat(){
-        if (this._float){
+    checkFloat() {
+        if (this._float) {
             this._float = false;
             this.operationPushValue(parseFloat(this._floatNumber.join("")));
             this._floatNumber = []
@@ -82,7 +80,7 @@ class CalcControler {
             let last = this._operation.pop();
             let result = eval(this._operation.join(""));
             this._operation6430
-             = [result, last];
+                = [result, last];
         } else if (clear) {
             this.checkFloat();
             let result = eval(this._operation.join(""));
@@ -94,7 +92,7 @@ class CalcControler {
 
     addOperation(value) {
         if (isNaN(value) && this.isOperator(value)) {
-            this.checkFloat();            
+            this.checkFloat();
             if (isNaN(this.lastOperation()) && this._operation.length > 0) {
                 this._operation[this._operation.length - 1] = value;
             } else {
@@ -114,19 +112,19 @@ class CalcControler {
                 this.displayCalc = val;
             }
         } else {
-            if (value == "."){
-                if (isNaN(this.lastOperation())){
+            if (value == ".") {
+                if (isNaN(this.lastOperation())) {
                     this._floatNumber.push(0);
                     this._floatNumber.push(".");
-                }else{
+                } else {
                     this._floatNumber.push(this._operation.pop());
                     this._floatNumber.push(".");
                 }
             } else {
                 this._floatNumber.push(value);
-            }            
+            }
             this.displayCalc = this._floatNumber.join("");
-            console.log(this._floatNumber);            
+            console.log(this._floatNumber);
         }
         console.log(this._operation);
     }
@@ -196,6 +194,49 @@ class CalcControler {
                 btn.style.cursor = "pointer";
             });
         })
+    }
+
+    initKeyboard() {
+        document.addEventListener("keyup", e => {
+            switch (e.key) {
+                case "Escape":
+                    this.clearAll();
+                    break
+                case "Backspace":
+                    this.clearEntry();
+                    break;
+                case "+":
+                case "-":
+                case "*":
+                case "/":
+                case "%":
+                    this.addOperation(e.key)
+                    break;
+                case "Enter":
+                case "=":
+                    if (this._operation.length > 1) {
+                        this.calculate(true)
+                    }
+                    break;
+                case ".":
+                case ",":
+                    this.addOperation(".")
+                    this._float = true
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    this.addOperation(parseInt(e.key));
+                    break;
+            }
+        });
     }
 
 
