@@ -97,6 +97,7 @@ class CalcControler {
             if (!clear) {
                 let last = this._operation.pop();
                 let result = eval(this._operation.join(""));
+                this.displayCalc = result;
                 this._operation = [result, last];
             } else if (clear) {
                 this.checkFloat();
