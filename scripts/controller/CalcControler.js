@@ -1,7 +1,7 @@
 class CalcControler {
 
     constructor() {
-
+        this._audio = new Audio("click.mp3");
         this._operation = [];
         this._float = false;
         this._floatNumber = [];
@@ -93,18 +93,22 @@ class CalcControler {
         }
     }
     calculate(clear) {
-
-        if (!clear) {
-            let last = this._operation.pop();
-            let result = eval(this._operation.join(""));
-            this._operation6430
-                = [result, last];
-        } else if (clear) {
-            this.checkFloat();
-            let result = eval(this._operation.join(""));
-            this.displayCalc = result;
-            this._operation = [result];
-        }
+        try{
+            if (!clear) {
+                let last = this._operation.pop();
+                let result = eval(this._operation.join(""));
+                this._operation6430
+                    = [result, last];
+            } else if (clear) {
+                this.checkFloat();
+                let result = eval(this._operation.join(""));
+                this.displayCalc = result;
+                this._operation = [result];
+            }
+        } catch(er){
+            this.clearAll();
+            this.displayCalc = "error"
+        }       
 
     }
 
@@ -152,6 +156,8 @@ class CalcControler {
     }
 
     execBtn(value) {
+        this._audio.currentTime = 0;
+        this._audio.play();
         switch (value) {
             case "ac":
                 this.clearAll();
@@ -216,6 +222,8 @@ class CalcControler {
 
     initKeyboard() {
         document.addEventListener("keyup", e => {
+            this._audio.currentTime = 0;
+            this._audio.play();
             switch (e.key) {
                 case "Escape":
                     this.clearAll();
@@ -265,7 +273,11 @@ class CalcControler {
     }
 
     set displayCalc(valor) {
-        this._displaycalcEl.innerHTML = valor;
+        if (valor.toString().length <=10){
+            this._displaycalcEl.innerHTML = valor;
+        } else{
+            this.clearAll();
+        }        
     }
 
     get displayTime() {
