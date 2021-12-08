@@ -4,7 +4,10 @@ class CalcControler {
         console.log(value);
     }
     constructor() {
+        
         this._operation = [];
+        this._float = false;
+        this._floatNumber = [];
         //document.getElementById("display")
         this._displaycalcEl = document.querySelector("#display");
         this._dateEl = document.querySelector("#data");
@@ -37,11 +40,22 @@ class CalcControler {
     }
 
     clearAll() {
+        this.checkFloat();
         this._operation = [];
+        this.displayCalc ='0';
     }
 
     clearEntry() {
+        this.checkFloat();        //error if CE called with no number and if operation len = 1
+        if (/*!isNaN(this.lastOperation()) &&*/ this._operation.length > 2){
+            this.displayCalc = this._operation[0];;
+        } else if (/*!isNaN(this.lastOperation()) &&*/ this._operation.length < 2){
+            this.displayCalc = '0';
+        }
+        
         this._operation.pop();
+        console.log("CE:");
+        console.log(this._operation);
     }
 
     isOperator(value) {
@@ -55,13 +69,22 @@ class CalcControler {
         }
     }
 
+    checkFloat(){
+        if (this._float){
+            this._float = false;
+            this.operationPushValue(parseFloat(this._floatNumber.join("")));
+            this._floatNumber = []
+        }
+    }
     calculate(clear) {
 
         if (!clear) {
             let last = this._operation.pop();
             let result = eval(this._operation.join(""));
-            this._operation = [result, last];
+            this._operation6430
+             = [result, last];
         } else if (clear) {
+            this.checkFloat();
             let result = eval(this._operation.join(""));
             this.displayCalc = result;
             this._operation = [result];
@@ -70,28 +93,40 @@ class CalcControler {
     }
 
     addOperation(value) {
-        if (isNaN(value)) {
+        if (isNaN(value) && this.isOperator(value)) {
+            this.checkFloat();            
             if (isNaN(this.lastOperation()) && this._operation.length > 0) {
-                if (this.isOperator(value)) {
-                    this._operation[this._operation.length - 1] = value;
-                } else {
-                    console.log(".");
-                }
+                this._operation[this._operation.length - 1] = value;
             } else {
                 if (this._operation.length != 0) {
                     this.operationPushValue(value);
                 }
             }
-        } else {
+
+        } else if (!isNaN(value) && !this._float) {
             if (this._operation.length == 0 || isNaN(this.lastOperation())) {
+                // list is empty and last operation its not a number
                 this.operationPushValue(value);
                 this.displayCalc = value;
             } else {
                 let val = this.lastOperation().toString() + value.toString();
                 this._operation[this._operation.length - 1] = parseInt(val);
                 this.displayCalc = val;
-            }//atualizar display
-
+            }
+        } else {
+            if (value == "."){
+                if (isNaN(this.lastOperation())){
+                    this._floatNumber.push(0);
+                    this._floatNumber.push(".");
+                }else{
+                    this._floatNumber.push(this._operation.pop());
+                    this._floatNumber.push(".");
+                }
+            } else {
+                this._floatNumber.push(value);
+            }            
+            this.displayCalc = this._floatNumber.join("");
+            console.log(this._floatNumber);            
         }
         console.log(this._operation);
     }
@@ -126,10 +161,11 @@ class CalcControler {
             case "igual":
                 if (this._operation.length > 1) {
                     this.calculate(true)
-                } 
+                }
                 break;
             case "ponto":
-
+                this.addOperation(".")
+                this._float = true
                 break;
             case '0':
             case '1':
